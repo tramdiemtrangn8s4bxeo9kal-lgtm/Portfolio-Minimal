@@ -5,7 +5,7 @@
 <h6>A Minimalistic Static Wbsite Template with Light/Dark Theme</h6>
 
 <a href="https://portfolio-minimal-sang-buster.vercel.app/" _target="blank">
-<img src="README.assets/Web_Preview.png" alt="Web_Preview" width=60%/>
+<img src="README.assets/Web_Preview.png" alt="Web_Preview" width=40%/>
 </a>
 
 ---
