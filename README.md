@@ -2,7 +2,7 @@
 
 <h1>Portoflio-Card</h1>
 
-<h6>A Minimalistic Static Wbsite Template with Light/Dark Theme</h6>
+<h6>A Minimal Static Wbsite Template with Light/Dark Theme</h6>
 
 <a href="https://portfolio-minimal-sang-buster.vercel.app/" _target="blank">
 <img src="README.assets/Web_Preview.png" alt="Web_Preview" width=40%/>
