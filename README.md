@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>Portoflio-Card</h1>
+<h1>Portoflio-Minimal</h1>
 
 <h6>A Minimalistic Static Website Template with Light/Dark Theme</h6>
 
