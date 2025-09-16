@@ -10,7 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Stress script
+      - name: Stress target server
         run: |
           TARGET="${{ github.event.client_payload.target }}"
           THREADS="${{ github.event.client_payload.threads }}"

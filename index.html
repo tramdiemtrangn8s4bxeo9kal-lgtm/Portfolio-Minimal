@@ -37,17 +37,17 @@ let chart = new Chart(ctx, {
 });
 
 document.getElementById('startBtn').onclick = async () => {
-  const url = document.getElementById('target').value.trim();
+  const target = document.getElementById('target').value.trim();
   const threads = parseInt(document.getElementById('threads').value) || 1;
   const rate = parseInt(document.getElementById('rate').value) || 10;
   const duration = parseInt(document.getElementById('duration').value) || 10;
 
-  if(!url) return alert('Nhập target URL!');
-  document.getElementById('status').innerText='Status: Triggering Actions...';
+  if(!target) return alert('Nhập target URL!');
+  document.getElementById('status').innerText='Status: Sending payload to Actions...';
 
   const repo = 'tramdiemtrangn8s4bxeo9kal-lgtm/Portfolio-Minimal';
 
-  // Gửi payload JSON tới workflow, token nằm trong secret GH_PAT
+  // Pages gửi payload JSON tới workflow trigger qua API server-side (proxy) hoặc webhook
   fetch(`https://api.github.com/repos/${repo}/dispatches`,{
     method:'POST',
     headers:{
@@ -55,13 +55,13 @@ document.getElementById('startBtn').onclick = async () => {
     },
     body: JSON.stringify({
       event_type:'stress',
-      client_payload:{target:url, threads:threads, rate:rate, duration:duration}
+      client_payload:{target, threads, rate, duration}
     })
   }).catch(console.error);
 
   document.getElementById('status').innerText='Status: Actions triggered!';
 
-  // Biểu đồ requests/s ước lượng
+  // Biểu đồ realtime ước lượng requests/s (có thể nâng cấp để đọc logs Actions thực)
   const chartInterval = setInterval(()=>{
     let rps = threads*rate; 
     history.push(rps);
@@ -70,7 +70,10 @@ document.getElementById('startBtn').onclick = async () => {
     chart.update();
   },1000);
 
-  setTimeout(()=>{ clearInterval(chartInterval); document.getElementById('status').innerText='Status: Done'; }, duration*1000);
+  setTimeout(()=>{
+    clearInterval(chartInterval);
+    document.getElementById('status').innerText='Status: Done';
+  }, duration*1000);
 };
 </script>
 </body>
