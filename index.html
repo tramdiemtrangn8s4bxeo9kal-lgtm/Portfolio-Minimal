@@ -21,6 +21,7 @@ h1 { font-size:2em; margin-bottom:10px; text-shadow:0 0 10px #0f0; }
 <input id="rate" placeholder="Rate (req/s per thread)" type="number">
 <input id="duration" placeholder="Duration (s)" type="number">
 <button id="startBtn">Start Stress</button>
+
 <div id="status">Status: Idle <span class="blink">█</span></div>
 <canvas id="chart" width="700" height="300"></canvas>
 
@@ -46,7 +47,7 @@ document.getElementById('startBtn').onclick = async () => {
 
   const repo = 'tramdiemtrangn8s4bxeo9kal-lgtm/Portfolio-Minimal';
 
-  // Trigger workflow bằng repository_dispatch, token KHÔNG trong HTML
+  // Gửi payload JSON tới workflow, token nằm trong secret GH_PAT
   fetch(`https://api.github.com/repos/${repo}/dispatches`,{
     method:'POST',
     headers:{
@@ -60,7 +61,7 @@ document.getElementById('startBtn').onclick = async () => {
 
   document.getElementById('status').innerText='Status: Actions triggered!';
 
-  // Biểu đồ requests/s tạm thời update ước lượng
+  // Biểu đồ requests/s ước lượng
   const chartInterval = setInterval(()=>{
     let rps = threads*rate; 
     history.push(rps);
