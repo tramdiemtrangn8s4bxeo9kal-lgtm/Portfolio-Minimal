@@ -1,83 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NEGANCSL</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
-
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    h1 {
-      font-size: 3em;
-      font-weight: 700;
-      margin: 0;
-      text-transform: uppercase;
-      letter-spacing: 5px;
-      background: linear-gradient(90deg, #ff8a00, #e52e71, #9b00e8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: glow 3s infinite alternate;
-    }
-
-    @keyframes glow {
-      from { text-shadow: 0 0 10px #ff8a00; }
-      to { text-shadow: 0 0 25px #9b00e8; }
-    }
-
-    .skills {
-      margin-top: 30px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
-    }
-
-    .skill {
-      padding: 10px 20px;
-      border-radius: 50px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      font-size: 1.1em;
-      transition: transform 0.3s, background 0.3s;
-    }
-
-    .skill:hover {
-      transform: scale(1.1);
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    footer {
-      position: absolute;
-      bottom: 20px;
-      font-size: 0.9em;
-      color: #ccc;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>WebDstat GitHub Pages</title>
+<style>
+body {
+  background: #111;
+  color: #0f0;
+  font-family: "Courier New", monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+  overflow-x: hidden;
+}
+h1 { font-size: 2em; margin-bottom: 10px; }
+#target { width: 300px; padding: 5px; margin-bottom: 10px; background:#000; color:#0f0; border:1px solid #0f0; }
+button { padding: 10px 20px; margin-bottom: 20px; background:#000; color:#0f0; border:1px solid #0f0; cursor:pointer; }
+button:hover { background:#0f0; color:#000; }
+#stats { font-size: 1.5em; margin-bottom: 20px; }
+canvas { background:#000; border:1px solid #0f0; }
+@keyframes blink { 0%, 100% { opacity:1 } 50% { opacity:0 } }
+.blink { animation: blink 1s step-start infinite; }
+</style>
 </head>
 <body>
-  <h1>NEGANCSL</h1>
-  <div class="skills">
-    <div class="skill">Python3</div>
-    <div class="skill">Node.js</div>
-    <div class="skill">Docker</div>
-    <div class="skill">Linux</div>
-    <div class="skill">Networking</div>
-    <div class="skill">Security</div>
-  </div>
-  <footer>© 2025 NEGANCSL</footer>
+<h1>WebDstat 100% GitHub Pages</h1>
+<input id="target" placeholder="Nhập URL cần test">
+<button id="startBtn">Start</button>
+<div id="stats">Requests: 0 <span class="blink">█</span></div>
+<canvas id="chart" width="600" height="300"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let requests = 0;
+let interval;
+let history = [];
+const maxPoints = 50;
+
+const ctx = document.getElementById('chart').getContext('2d');
+const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: Array(maxPoints).fill(''),
+        datasets: [{
+            label: 'Requests/s',
+            data: Array(maxPoints).fill(0),
+            borderColor: '#0f0',
+            backgroundColor: 'rgba(0,255,0,0.1)',
+            tension: 0.3
+        }]
+    },
+    options: {
+        responsive: false,
+        scales: {
+            x: { display:false },
+            y: { min:0 }
+        },
+        plugins: { legend:{ labels:{ color:'#0f0' } } }
+    }
+});
+
+document.getElementById('startBtn').onclick = () => {
+    const url = document.getElementById('target').value;
+    if(!url) return alert('Nhập URL trước!');
+    requests = 0;
+    history = [];
+    chart.data.datasets[0].data.fill(0);
+    chart.update();
+    clearInterval(interval);
+
+    // Đếm request
+    interval = setInterval(async () => {
+        try {
+            await fetch(url, {mode: 'no-cors'});
+            requests++;
+        } catch(e) {}
+    }, 100); // 10 requests/s 1 tab
+
+    // Cập nhật stats & chart mỗi giây
+    setInterval(() => {
+        history.push(requests);
+        if(history.length>maxPoints) history.shift();
+        chart.data.datasets[0].data = history.concat(Array(maxPoints-history.length).fill(0));
+        chart.update();
+        document.getElementById('stats').innerText = `Requests: ${requests} █`;
+        requests = 0;
+    }, 1000);
+};
+</script>
 </body>
 </html>
