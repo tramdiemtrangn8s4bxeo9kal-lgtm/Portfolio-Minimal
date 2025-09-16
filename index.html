@@ -5,23 +5,22 @@
 <title>WebStress Dashboard</title>
 <style>
 body { background:#111; color:#0f0; font-family:"Courier New", monospace; display:flex; flex-direction:column; align-items:center; padding:20px;}
-input, button { padding:8px; margin:5px; background:#000; color:#0f0; border:1px solid #0f0; font-size:1em;}
+input, button { padding:10px; margin:5px; background:#000; color:#0f0; border:1px solid #0f0; font-size:1em; }
 button:hover { background:#0f0; color:#000; cursor:pointer;}
 canvas { background:#000; border:1px solid #0f0; margin-top:20px;}
-.blink { animation: blink 1s step-start infinite;}
-@keyframes blink { 0%,100%{opacity:1}50%{opacity:0}}
-h1 { font-size:2em; margin-bottom:10px; }
+.blink { animation: blink 1s step-start infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0} }
+h1 { font-size:2em; margin-bottom:10px; text-shadow:0 0 10px #0f0; }
 </style>
 </head>
 <body>
 <h1>WebStress Dashboard</h1>
 
 <input id="target" placeholder="Target URL (only your server)">
-<input id="threads" placeholder="Threads (e.g., 5)" type="number">
+<input id="threads" placeholder="Threads" type="number">
 <input id="rate" placeholder="Rate (req/s per thread)" type="number">
 <input id="duration" placeholder="Duration (s)" type="number">
 <button id="startBtn">Start Stress</button>
-
 <div id="status">Status: Idle <span class="blink">█</span></div>
 <canvas id="chart" width="700" height="300"></canvas>
 
@@ -47,25 +46,23 @@ document.getElementById('startBtn').onclick = async () => {
 
   const repo = 'tramdiemtrangn8s4bxeo9kal-lgtm/Portfolio-Minimal';
 
-  for(let i=0;i<threads;i++){
-    fetch(`https://api.github.com/repos/${repo}/dispatches`,{
-      method:'POST',
-      headers:{
-        'Accept':'application/vnd.github+json',
-        'Authorization':`token SECRET_NOT_IN_HTML`
-      },
-      body: JSON.stringify({
-        event_type:'stress',
-        client_payload:{target:url, threads:threads, rate:rate, duration:duration}
-      })
-    }).catch(console.error);
-  }
+  // Trigger workflow bằng repository_dispatch, token KHÔNG trong HTML
+  fetch(`https://api.github.com/repos/${repo}/dispatches`,{
+    method:'POST',
+    headers:{
+      'Accept':'application/vnd.github+json'
+    },
+    body: JSON.stringify({
+      event_type:'stress',
+      client_payload:{target:url, threads:threads, rate:rate, duration:duration}
+    })
+  }).catch(console.error);
 
   document.getElementById('status').innerText='Status: Actions triggered!';
 
-  // Biểu đồ requests/s (tối đa 1 update/s)
+  // Biểu đồ requests/s tạm thời update ước lượng
   const chartInterval = setInterval(()=>{
-    let rps = threads*rate; // estimate requests/s
+    let rps = threads*rate; 
     history.push(rps);
     if(history.length>maxPoints) history.shift();
     chart.data.datasets[0].data = history.concat(Array(maxPoints-history.length).fill(0));
