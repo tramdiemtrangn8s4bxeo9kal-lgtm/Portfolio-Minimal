@@ -1,0 +1,34 @@
+name: WebStress
+on:
+  repository_dispatch:
+    types: [stress]
+
+jobs:
+  stress_job:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        thread: [1,2,3,4,5] # có thể tăng threads
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run stress script
+        run: |
+          TARGET="${{ github.event.client_payload.target }}"
+          THREADS="${{ github.event.client_payload.threads }}"
+          RATE="${{ github.event.client_payload.rate }}"
+          DURATION="${{ github.event.client_payload.duration }}"
+          END=$((SECONDS+DURATION))
+          echo "Stressing $TARGET for $DURATION seconds with $THREADS threads at $RATE req/s"
+          
+          while [ $SECONDS -lt $END ]; do
+            for i in $(seq 1 $THREADS); do
+              for j in $(seq 1 $RATE); do
+                curl -s -o /dev/null "$TARGET" &
+              done
+            done
+            wait
+          done
+    env:
+      GH_TOKEN: ${{ secrets.GH_PAT }}
